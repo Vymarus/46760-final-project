@@ -1,82 +1,78 @@
 ---
 config:
   theme: redux
+  layout: dagre
   look: neo
 ---
 flowchart TD
     Start("Start") --> Init["Init Variables+setup()"]
     Init --> Loop["Enter loop()"]
     Loop --> Cloud["ArduinoCloudUpdate()"]
-    Cloud --> ComputeFreq["Compute frequency"]
+    Cloud --> Delay["Light sleep<br>Wakeup at zero crossing"]
     Timer["Timer 10kHz Callback:Start ADC reading"] --> ZeroDetect{"Zero crossingdetected"}
     ZeroDetect -- true --> UpdatePeriod["Update Period"]
-    UpdatePeriod --> Return1("[Return]") & UpdatePath["Update periodmeasurements"]
-    UpdatePath --> ComputeFreq
-    ComputeFreq --> FreqCtrl["freqCtrl"]
+    UpdatePeriod --> Return1("[Return]")
+    ComputeFreq["Compute frequency"] --> FreqCtrl["freqCtrl"]
     FreqCtrl --> IsFreqCtrlOn{"freqCtrl enum"}
     IsFreqCtrlOn -- LEDOn --> RunLEDs["Load LED at full power"]
     IsFreqCtrlOn -- LEDOff --> PWMOutput["Load LED at no power"]
-    LCDCtrl["LCDCTRL"] --> LCD0{"= 0?"}
-    LCD0 -- true --> DispFreq["Displayfrequency"]
-    DispFreq --> ComputeRMS["ComputeRMS voltage"]
-    LCD0 -- false --> LCD1{"= 1?"}
-    LCD1 -- true --> DispMode["DisplayfreqCtrl Mode"]
-    DispMode --> ComputeRMS
-    LCD1 -- false --> LCD2{"= 2?"}
-    LCD2 -- true --> DispPWM1["DisplayNormal Reserve PWM"]
-    DispPWM1 --> ComputeRMS
-    LCD2 -- false --> LCD3{"= 3?"}
-    LCD3 -- true --> DispPWM2["DisplayDisturbance Reserve PWM"]
-    DispPWM2 --> ComputeRMS
-    LCD3 -- false --> LCD4{"= 4?"}
-    LCD4 -- true --> DispRMS["DisplayRMS Voltage"]
-    DispRMS --> ComputeRMS
-    FreqCtrlToggleInterrupt["freqCtrlToggleInterrupt(button or IOT)"] --> FreqCtrlToggle["toggle freqCtrl"]
-    FreqCtrlToggle --> FreqCtrlReturn("[Return]")
-    LCDCtrlInterrupt["LCDCTRLInterrupt(button or IOT)"] --> LCDCtrlInc["IncrementLCDCTRL"]
-    LCDCtrlInc --> LCDCtrlCheck{"LCDCTRL > 4?"}
-    LCDCtrlCheck -- true --> LCDCtrlReset["LCDCTRL = 0"]
+    LCDCtrl["LCDCTRL"] --> LCD0{"LCDCTRL enum"}
+    DispMode["DisplayfreqCtrl Mode"] --> ComputeRMS["ComputeRMS voltage"]
+    DispRMS["DisplayRMS Voltage"] --> ComputeRMS
+    FreqCtrlToggleInterrupt["freqCtrlToggleInterrupt(button or IOT)"] --> FreqCtrlToggle["freqCTRL"]
+    LCDCtrlInterrupt["LCDCTRLInterrupt(button or IOT)"] --> LCDCtrlInc["LCDCTRL"]
+    LCDCtrlInc --> LCDCtrlCheck{"LCDCTRL enum"}
+    LCDCtrlCheck -- "LCDCTRL == DisplayMode" --> LCDCtrlReset["LCDCTRL = DisplayRMS"]
     LCDCtrlReset --> LCDCtrlReturn("[Return]")
-    LCDCtrlCheck -- false --> LCDCtrlReturn
-    Delay["Delay100 ms"] --> Cloud
-    ComputeRMS --> Delay
-    PWMOutput --> LCDCtrl
-    RunLEDs --> LCDCtrl
-    n1@{ label: "<span style=\"padding-left:\">Output load PWM<br>as a function of frequency</span>" } --> LCDCtrl
-    IsFreqCtrlOn -- freqCtrlOn --> n1
+    ComputeRMS --> Cloud
+    IsFreqCtrlOn -- freqCtrlOn --> n1@{ label: "<span style=\"padding-left:\">Output load PWM<br>as a function of frequency</span>" }
     ZeroDetect -- false --> Return1
+    LCD0 -- DisplayMode --> DispMode
+    Delay --> ComputeFreq
+    RunLEDs --> DispFreq["Displayfrequency"]
+    PWMOutput --> DispFreq
+    n1 --> DispFreq
+    DispFreq --> LCDCtrl
+    LCD0 -- DisplayRMS --> DispRMS
+    LCDCtrlCheck -- "LCDCTRL == DisplayRMS" --> n2["LCDCTRL = DisplayMode"]
+    n2 --> LCDCtrlReturn
+    n3["LCDCTRL enum"] -- "freqCTRL == freqCtrlOn" --> n4@{ label: "<span style=\"padding-left:\">freqCTRL = LEDOn</span>" }
+    n4 --> n5["[Return]"]
+    n3 -- "freqCTRL == LEDOn" --> n6@{ label: "<span style=\"padding-left:\">freqCTRL = LEDOff</span>" }
+    n6 --> n5
+    FreqCtrlToggle --> n3
+    n3 -- "freqCTRL == LEDOff" --> n7["freqCTRL = freqCtrlOn"]
+    n7 --> n5
     Timer@{ shape: hex}
     FreqCtrlToggleInterrupt@{ shape: hex}
     LCDCtrlInterrupt@{ shape: hex}
     n1@{ shape: rect}
+    n3@{ shape: diam}
+    n4@{ shape: rect}
+    n5@{ shape: rounded}
+    n6@{ shape: rect}
      Start:::Rose
      Init:::Sky
      Loop:::Sky
      Cloud:::Sky
-     ComputeFreq:::Sky
+     Delay:::Sky
      Timer:::Ash
+     ComputeFreq:::Sky
      FreqCtrl:::Pine
      IsFreqCtrlOn:::Sky
      RunLEDs:::Sky
      PWMOutput:::Sky
      LCDCtrl:::Pine
      LCD0:::Sky
-     DispFreq:::Sky
-     ComputeRMS:::Sky
-     LCD1:::Sky
      DispMode:::Sky
-     LCD2:::Sky
-     DispPWM1:::Sky
-     LCD3:::Sky
-     DispPWM2:::Sky
-     LCD4:::Sky
+     ComputeRMS:::Sky
      DispRMS:::Sky
      FreqCtrlToggleInterrupt:::Ash
      FreqCtrlToggle:::Pine
      LCDCtrlInterrupt:::Ash
      LCDCtrlInc:::Pine
-     Delay:::Sky
      n1:::Sky
+     DispFreq:::Sky
     classDef Ash stroke-width:1px, stroke-dasharray:none, stroke:#999999, fill:#EEEEEE, color:#000000
     classDef Pine stroke-width:1px, stroke-dasharray:none, stroke:#254336, fill:#27654A, color:#FFFFFF
     classDef Rose stroke-width:1px, stroke-dasharray:none, stroke:#FF5978, fill:#FFDFE5, color:#8E2236
