@@ -352,6 +352,46 @@ bool button_led_state = false;   // mode state
 const int LEDPin_ext = A3;  // Pin for external LED 
 boolean changes=false;
 
+
+
+// functions to change value through dashboard and log to serial 
+void onLedExternalChange()  {
+  // Add your code here to act upon LedExternal change
+  Serial.print("Led status changed: ");
+  Serial.println(led_external);
+  changes=true;
+}
+
+
+
+void onModeChange()  {
+  // Add your code here to act upon Mode change
+  Serial.print("Mode changed via dashboard: ");
+  Serial.println(mode);
+  digitalWrite(mode_button_Pin, mode);
+  changes=true;
+}
+
+void updateLCD() {
+  lcd.setCursor(0, 0);
+  lcd.print("                ");  // Leere erste Zeile
+  lcd.setCursor(0, 1);
+  lcd.print("                ");  // Leere zweite Zeile
+  
+  lcd.setCursor(0, 0);
+  lcd.print("Frequency:");
+  lcd.print(freq, 3);
+  lcd.setCursor(0, 1);
+  lcd.print("LED:");
+  lcd.print(led_external ? "on " : "off");
+  lcd.print(" Mode:");
+  lcd.print(mode ? "on " : "off");
+}
+
+void onLedInternalChange()  {
+  // Add your code here to act upon LedInternal change
+}
+
 void setup() {
   Serial.begin(9600);
   delay(1500); 
@@ -380,10 +420,6 @@ void setup() {
   setupTimerTC4();
   setupDAC();
   pinMode(0, OUTPUT);
-
-
-
-  
   
 }
 
@@ -455,52 +491,8 @@ void loop() {
       freq > 50.025 ? digitalWrite(LED_BUILTIN, HIGH) : digitalWrite(LED_BUILTIN, LOW);
   }
   runComputeRMS();
-
-
-
-
   
 }
-
-// functions to change value through dashboard and log to serial 
-void onLedExternalChange()  {
-  // Add your code here to act upon LedExternal change
-  Serial.print("Led status changed: ");
-  Serial.println(led_external);
-  changes=true;
-}
-
-
-
-void onModeChange()  {
-  // Add your code here to act upon Mode change
-  Serial.print("Mode changed via dashboard: ");
-  Serial.println(mode);
-  digitalWrite(mode_button_Pin, mode);
-  changes=true;
-}
-
-void updateLCD() {
-  lcd.setCursor(0, 0);
-  lcd.print("                ");  // Leere erste Zeile
-  lcd.setCursor(0, 1);
-  lcd.print("                ");  // Leere zweite Zeile
-  
-  lcd.setCursor(0, 0);
-  lcd.print("Frequency:");
-  lcd.print(freq, 3);
-  lcd.setCursor(0, 1);
-  lcd.print("LED:");
-  lcd.print(led_external ? "on " : "off");
-  lcd.print(" Mode:");
-  lcd.print(mode ? "on " : "off");
-}
-
-void onLedInternalChange()  {
-  // Add your code here to act upon LedInternal change
-}
-
-
 
 
 
