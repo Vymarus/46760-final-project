@@ -114,11 +114,6 @@ void setupFastADC()
 
     // Setup generic clocks source clock
     D_println("Setting generic clock");
-    GCLK->GENCTRL.reg = GCLK_GENCTRL_GENEN |        // Enable GCLK4
-                        GCLK_GENCTRL_SRC_DFLL48M |  // Set to external 48MHz
-                        // GCLK_GENCTRL_IDC |          // In case of odd division, improve it by using 50/50.
-                        GCLK_GENCTRL_ID(4);         // Select GCLK5
-    while (GCLK->STATUS.bit.SYNCBUSY); // Wait for synchronization
 
     // Setting up generic clock division
     D_println("Setting clock");
