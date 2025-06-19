@@ -14,7 +14,7 @@
    - https://github.com/arduino-libraries/ArduinoIoTCloud#what
 */
 
-#include <SPI.h>
+#include <Arduino.h>
 #include "thingProperties2.h"
 
 #if !defined(LED_BUILTIN) && !defined(ARDUINO_NANO_ESP32)
@@ -33,7 +33,8 @@ void setup() {
    * - DBG_DEBUG: Show debug, info, warning, and error messages
    * - DBG_VERBOSE: Show all messages
    */
-  setDebugMessageLevel(DBG_INFO);
+  Debug.setDebugLevel(DBG_VERBOSE);
+  Debug.setDebugOutputStream(&Serial);
 
   /* Configure LED pin as an output */
   pinMode(LED_BUILTIN, OUTPUT);
