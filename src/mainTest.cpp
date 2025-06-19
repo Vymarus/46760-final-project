@@ -13,8 +13,9 @@
   The full list of compatible boards can be found here:
    - https://github.com/arduino-libraries/ArduinoIoTCloud#what
 */
-#include <Arduino.h>
-#include "thingProperties.h"
+
+#include <SPI.h>
+#include "thingProperties2.h"
 
 #if !defined(LED_BUILTIN) && !defined(ARDUINO_NANO_ESP32)
 static int const LED_BUILTIN = 2;
@@ -59,12 +60,4 @@ void onLedChange() {
   Serial.print("LED set to ");
   Serial.println(led);
   digitalWrite(LED_BUILTIN, led);
-}
-
-/*
-  Since Potentiometer is READ_WRITE variable, onPotentiometerChange() is
-  executed every time a new value is received from IoT Cloud.
-*/
-void onPotentiometerChange()  {
-  // Add your code here to act upon Potentiometer change
 }
