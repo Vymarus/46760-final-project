@@ -57,6 +57,7 @@ void loop()
 	static uint32_t last_millis = millis();
 	if (millis() > last_millis+1000) 
 	{
+        last_millis = millis();
 		ArduinoCloud.update(); // update cloud
 		Serial.println("Cloud Update");
 	}
