@@ -35,7 +35,7 @@ void setup()
 	pinMode(LEDPin_ext, OUTPUT);			// LED external
 
 	initProperties();
-	ArduinoCloud.begin(ArduinoIoTPreferredConnection, false);
+	ArduinoCloud.begin(ArduinoIoTPreferredConnection);
 	setDebugMessageLevel(2);
 	ArduinoCloud.printDebugInfo();
 
